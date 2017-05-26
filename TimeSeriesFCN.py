@@ -8,16 +8,15 @@ from TensorboardUtilities import *
 from Model import *
 from multiprocessing import Process
 
-doDropout = False
-
-epochs = 120
-categories = 5
-sequenceLength = 1024
-features = 3
-batchSize = 32
 
 class ModelRun(Process):
 
+    dataset = ''
+    epochs = 0
+    categories = 0
+    sequenceLength = 0
+    features = 0
+    batchSize = 0
     trainData = None
     trainLabels = None
     trainBatchNum = 0
@@ -27,24 +26,30 @@ class ModelRun(Process):
     filtSizes = None
     channels = None
 
-    def __init__(self, filtSizes, channels):
+    def __init__(self, dataset, filtSizes, channels, epochs, categories, sequenceLength, features, batchSize):
         super(ModelRun, self).__init__()
+        self.dataset = dataset
         self.filtSizes = filtSizes
         self.channels = channels
+        self.epochs = epochs
+        self.categories = categories
+        self.sequenceLength = sequenceLength
+        self.features = features
+        self.batchSize = batchSize
     
     def loadWatchData(self):
         datapath = 'datas/watch_accelerometer_with_5_classes.csv'
         data, labels = getData(datapath)
         dataDict = convertToDictionary(data, labels)
         trainDict, testDict = splitData(dataDict)
-        trainData, trainLabels = convertToLists(trainDict, sequenceLength)
-        testData, testLabels = convertToLists(testDict, sequenceLength)
+        trainData, trainLabels = convertToLists(trainDict, self.sequenceLength)
+        testData, testLabels = convertToLists(testDict, self.sequenceLength)
         return trainData, trainLabels, testData, testLabels
     
     def getBatch(self, x, y, training):
         xd = []
         yd = []
-        for i in range(batchSize):
+        for i in range(self.batchSize):
             if training:
                 xd.append(self.trainData[self.trainBatchNum])
                 yd.append(self.trainLabels[self.trainBatchNum])
@@ -71,14 +76,16 @@ class ModelRun(Process):
     
     
     def run(self):
-        self.trainData, self.trainLabels, self.testData, self.testLabels = self.loadWatchData()
+        if self.dataset == 'watch':
+            self.trainData, self.trainLabels, self.testData, self.testLabels = self.loadWatchData()
+        else:
+            sys.exit(-1)
         with tf.Session() as sess:
             maxAcc = [0, 0]
-            x = tf.placeholder(dtype=tf.float32, shape=(batchSize, sequenceLength, features))
-            y = tf.placeholder(dtype=tf.float32, shape=(None, categories))
+            x = tf.placeholder(dtype=tf.float32, shape=(self.batchSize, self.sequenceLength, self.features))
+            y = tf.placeholder(dtype=tf.float32, shape=(None, self.categories))
             categoryProbabilities = makeModel(x, self.filtSizes, self.channels)
             with tf.name_scope('cross_entropy'):
-    #            cross_entropy = crossEntropy(categoryProbabilities, y)
                 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=categoryProbabilities))
             with tf.name_scope('train'):
                 train_step = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8).minimize(cross_entropy)
@@ -97,8 +104,10 @@ class ModelRun(Process):
             test_writer = tf.summary.FileWriter('test')
             sess.run(tf.global_variables_initializer())
             i = 0
-            for j in range(epochs):
+            # loop over the data a number of epochs
+            for j in range(self.epochs):
                 try:
+                    # while there is unseen data in the training set, train on the data
                     while True:
                         batch = self.getBatch(x, y, True)
                         if i%100 == 0:
@@ -114,15 +123,22 @@ class ModelRun(Process):
                 except IndexError as msg:
                     self.trainBatchNum = 0
                     sys.stdout.write("Epoch " + str(j) + " ")
+                    # Test accuracy calculation
                     testAcc = self.checkAgainstTestData(x, y, accuracy)
                     if testAcc > maxAcc[0]:
                         maxAcc = [testAcc, j]
             print(maxAcc)
             f = open('attempts.log', 'a')
-            f.write('\n'+str(batchSize)+ '\t'+str(self.filtSizes)+'\t\t'+str(self.channels[1:-1])+'\t\t'+str(maxAcc[0])+'\t'+str(maxAcc[1]))
+            f.write('\n'+str(self.batchSize)+ '\t'+str(self.filtSizes)+'\t\t'+str(self.channels[1:-1])+'\t\t'+str(maxAcc[0])+'\t'+str(maxAcc[1]))
             sess.close()
-    
-if __name__ == '__main__':
+
+def classProject():
+    dataset = 'watch'
+    epochs = 120
+    categories = 5
+    sequenceLength = 1024
+    features = 3
+    batchSize = 32
     filtSizes = [
             [3, 5, 7, 9, 7, 5, 3]
             ]
@@ -131,6 +147,9 @@ if __name__ == '__main__':
             ]
     for i in range(len(filtSizes)):
         for j in range(5):
-            run = ModelRun(filtSizes[i], channels[i])
+            run = ModelRun(dataset, filtSizes[i], channels[i], epochs, categories, sequenceLength, features, batchSize)
             run.start()
             run.join()
+
+if __name__ == '__main__':
+    classProject()
