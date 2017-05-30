@@ -140,16 +140,110 @@ def classProject():
     features = 3
     batchSize = 32
     filtSizes = [
-            [3, 5, 7, 9, 7, 5, 3]
+            [5, 7, 9, 7, 5],
+            [5, 7, 9, 7, 5],
+            [5, 7, 5, 7, 5],
+            [5, 7, 5, 7, 5],
+            [5, 7, 9, 7, 5],
+            [5, 7, 9, 7, 5],
+            [5, 7, 5, 7, 5],
+            [5, 7, 5, 7, 5],
+            [5, 7, 9, 7, 5],
+            [9, 7, 5, 7, 9],
+            [9, 7, 5, 7, 9],
+            [7, 5, 7, 5, 7],
+            [7, 5, 7, 5, 7],
+            [9, 7, 5, 7, 9],
+            [9, 7, 5, 7, 9],
+            [7, 5, 7, 5, 7],
+            [7, 5, 7, 5, 7],
+            [9, 7, 5, 7, 9],
+            [9, 5, 3],
+            [7, 5, 3],
+            [3, 5, 7],
+            [3, 5, 9],
+            [9, 5, 3, 3],
+            [9, 5, 3, 3],
+            [9, 5, 3, 3],
+            [3, 5, 3, 9],
+            [3, 5, 3, 9],
+            [3, 5, 3, 9],
+            [9, 5, 5, 3],
+            [9, 5, 5, 3],
+            [9, 5, 5, 3],
+            [9, 7, 5, 3],
+            [9, 7, 5, 3],
+            [9, 7, 5, 3],
+            [3, 5, 5, 9],
+            [3, 5, 5, 9],
+            [3, 5, 5, 9],
+            [3, 5, 7, 9],
+            [3, 5, 7, 9],
+            [3, 5, 7, 9],
+            [3, 3, 5, 9],
+            [3, 3, 5, 9],
+            [3, 3, 5, 9],
             ]
     channels = [
-            [features, 512, 256, 128, 64, 128, 256, 512, categories]
+            [features, 1024, 512, 256, 512, 1024, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 1024, 512, 256, 512, 1024, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 512, 256, 128, 256, 512, categories],
+            [features, 512, 256, 512, 256, 512, categories],
+            [features, 512, 256, 128, 256, 512, categories],
+            [features, 512, 256, 512, 256, 512, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 1024, 512, 256, 512, 1024, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 1024, 512, 256, 512, 1024, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 512, 256, 128, 256, 512, categories],
+            [features, 512, 256, 512, 256, 512, categories],
+            [features, 512, 256, 128, 256, 512, categories],
+            [features, 512, 256, 512, 256, 512, categories],
+            [features, 1024, 512, 1024, 512, 1024, categories],
+            [features, 512, 1024, 512, categories],
+            [features, 512, 1024, 512, categories],
+            [features, 512, 1024, 512, categories],
+            [features, 512, 1024, 512, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories],
+            [features, 128, 256, 128, 64, categories],
+            [features, 256, 512, 256, 128, categories],
+            [features, 512, 1024, 512, 256, categories]
             ]
     for i in range(len(filtSizes)):
         for j in range(5):
             run = ModelRun(dataset, filtSizes[i], channels[i], epochs, categories, sequenceLength, features, batchSize)
             run.start()
             run.join()
+
+def ucrDataset(datapath, categories, sequenceLength):
+    epochs = 120
+    features = 1
+    batchSize = 32
+    filtSizes = [8, 5, 3]
+    channels = [128,256, 128]
+    run = ModelRun(datapath, filtSizes, channels, epochs, categories, sequenceLength, features, batchSize)
+    run.start()
+    run.join()
 
 if __name__ == '__main__':
     classProject()
