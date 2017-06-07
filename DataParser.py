@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import sys
 
-desiredModel = '5datas' 
+desiredModel = 'ZNorm5datas' 
 undesiredClasses = ['null', 'sit']
 #classes = {'stand':1, 'sit':2, 'null':3, 'stairsup':4, 'stairsdown':5, 'bike':6, 'walk':7 }
 classes = {'stand':0, 'bike':1, 'walk':2, 'stairsup':3, 'stairsdown':4, 'sit':-1, 'null':-1}
@@ -58,4 +58,10 @@ data = np.delete(data, badRowIndexes, 0)
 d = data[:,:-1]
 data[:,:-1] = (d-d.min(0))/d.ptp(0)
 print("Removed undesired rows")
+mu = np.mean(data[:,:-1], axis=0)
+variance = np.sqrt(np.array(np.var(data[:,:-1], axis=0)+.00000000000001, dtype=np.float32))
+print(mu)
+print(variance)
+data[:,:-1] = (data[:,:-1]-mu)/variance
+print(data)
 np.savetxt(desiredModel+'.csv', np.array(data, dtype=np.float32))

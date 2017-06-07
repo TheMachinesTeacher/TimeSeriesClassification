@@ -45,6 +45,9 @@ class ModelRun(Process):
         trainData, trainLabels = convertToLists(trainDict, self.sequenceLength)
         testData, testLabels = convertToLists(testDict, self.sequenceLength)
         return trainData, trainLabels, testData, testLabels
+
+    def loadUCR(self, datapath):
+        return None, None, None, None
     
     def getBatch(self, x, y, training):
         xd = []
@@ -79,7 +82,7 @@ class ModelRun(Process):
         if self.dataset == 'watch':
             self.trainData, self.trainLabels, self.testData, self.testLabels = self.loadWatchData()
         else:
-            sys.exit(-1)
+            self.trainData, self.trainLabels, self.testData, self.testLabels = self.loadUCR(dataset)
         with tf.Session() as sess:
             maxAcc = [0, 0]
             x = tf.placeholder(dtype=tf.float32, shape=(self.batchSize, self.sequenceLength, self.features))
@@ -140,94 +143,12 @@ def classProject():
     features = 3
     batchSize = 32
     filtSizes = [
-            [5, 7, 9, 7, 5],
-            [5, 7, 9, 7, 5],
-            [5, 7, 5, 7, 5],
-            [5, 7, 5, 7, 5],
-            [5, 7, 9, 7, 5],
-            [5, 7, 9, 7, 5],
-            [5, 7, 5, 7, 5],
-            [5, 7, 5, 7, 5],
-            [5, 7, 9, 7, 5],
-            [9, 7, 5, 7, 9],
-            [9, 7, 5, 7, 9],
-            [7, 5, 7, 5, 7],
-            [7, 5, 7, 5, 7],
-            [9, 7, 5, 7, 9],
-            [9, 7, 5, 7, 9],
-            [7, 5, 7, 5, 7],
-            [7, 5, 7, 5, 7],
-            [9, 7, 5, 7, 9],
-            [9, 5, 3],
-            [7, 5, 3],
-            [3, 5, 7],
-            [3, 5, 9],
-            [9, 5, 3, 3],
-            [9, 5, 3, 3],
-            [9, 5, 3, 3],
-            [3, 5, 3, 9],
-            [3, 5, 3, 9],
-            [3, 5, 3, 9],
-            [9, 5, 5, 3],
-            [9, 5, 5, 3],
-            [9, 5, 5, 3],
-            [9, 7, 5, 3],
-            [9, 7, 5, 3],
-            [9, 7, 5, 3],
-            [3, 5, 5, 9],
-            [3, 5, 5, 9],
-            [3, 5, 5, 9],
-            [3, 5, 7, 9],
-            [3, 5, 7, 9],
-            [3, 5, 7, 9],
-            [3, 3, 5, 9],
-            [3, 3, 5, 9],
-            [3, 3, 5, 9],
+            [3, 5, 7, 5, 3],
+            [3, 5, 7, 5, 3]
             ]
     channels = [
             [features, 1024, 512, 256, 512, 1024, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 1024, 512, 256, 512, 1024, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 512, 256, 128, 256, 512, categories],
-            [features, 512, 256, 512, 256, 512, categories],
-            [features, 512, 256, 128, 256, 512, categories],
-            [features, 512, 256, 512, 256, 512, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 1024, 512, 256, 512, 1024, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 1024, 512, 256, 512, 1024, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 512, 256, 128, 256, 512, categories],
-            [features, 512, 256, 512, 256, 512, categories],
-            [features, 512, 256, 128, 256, 512, categories],
-            [features, 512, 256, 512, 256, 512, categories],
-            [features, 1024, 512, 1024, 512, 1024, categories],
-            [features, 512, 1024, 512, categories],
-            [features, 512, 1024, 512, categories],
-            [features, 512, 1024, 512, categories],
-            [features, 512, 1024, 512, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories],
-            [features, 128, 256, 128, 64, categories],
-            [features, 256, 512, 256, 128, categories],
-            [features, 512, 1024, 512, 256, categories]
+            [features, 1024, 512, 1024, 512, 1024, categories]
             ]
     for i in range(len(filtSizes)):
         for j in range(5):
@@ -240,7 +161,7 @@ def ucrDataset(datapath, categories, sequenceLength):
     features = 1
     batchSize = 32
     filtSizes = [8, 5, 3]
-    channels = [128,256, 128]
+    channels = [features, 128,256, 128, categories]
     run = ModelRun(datapath, filtSizes, channels, epochs, categories, sequenceLength, features, batchSize)
     run.start()
     run.join()
