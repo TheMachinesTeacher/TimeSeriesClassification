@@ -4,7 +4,7 @@ import numpy as np
 from TensorboardUtilities import *
 import sys
 
-doDropout = False
+doDropout = True
 
 def makeModel(x, filtSizes, channels):
     return modelMeat(x, filtSizes, channels)

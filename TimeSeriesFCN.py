@@ -131,22 +131,30 @@ class ModelRun(Process):
                     if testAcc > maxAcc[0]:
                         maxAcc = [testAcc, j]
             print(maxAcc)
-            f = open('attempts.log', 'a')
+            f = open('dropoutAttempts.log', 'a')
             f.write('\n'+str(self.batchSize)+ '\t'+str(self.filtSizes)+'\t\t'+str(self.channels[1:-1])+'\t\t'+str(maxAcc[0])+'\t'+str(maxAcc[1]))
             sess.close()
 
 def classProject():
     dataset = 'watch'
-    epochs = 120
+    epochs = 250
     categories = 5
     sequenceLength = 1024
     features = 3
     batchSize = 32
     filtSizes = [
+            [8, 5, 3],
+            [8, 5, 3],
+            [9, 5, 3],
+            [9, 5, 3],
             [3, 5, 7, 5, 3],
             [3, 5, 7, 5, 3]
             ]
     channels = [
+            [features, 128,256, 128, categories],
+            [features, 256,512, 256, categories],
+            [features, 128,256, 128, categories],
+            [features, 256,512, 256, categories],
             [features, 1024, 512, 256, 512, 1024, categories],
             [features, 1024, 512, 1024, 512, 1024, categories]
             ]
